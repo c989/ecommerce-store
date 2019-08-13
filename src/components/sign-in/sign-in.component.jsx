@@ -2,7 +2,7 @@ import React from 'react';
 import FormInput from '../form-input/form-input.component';
 import './sign-in.style.scss';
 import CustomButton from '../custom-button/ custom-button.component';
-import { signInWithGoogle } from '../../firebase/firebase.utils';
+import { auth, signInWithGoogle } from '../../firebase/firebase.utils';
 import { sign } from 'crypto';
 
 class SignIn extends React.Component{
@@ -15,15 +15,24 @@ class SignIn extends React.Component{
         }
     }
 
-    handleSubmit = event => {
+    handleSubmit = async event => {
         event.preventDefault();
-        this.setState({ email: '', password: '' })
-    }
+
+        const { email, password } = this.state;
+
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            this.setState({ email: '', password: '' });
+            
+        }catch(error){
+            console.log(error);
+        }
+    };
 
     handleChange = event => {
         const { value, name } = event.target;
 
-        this.setState({ [name]: [value] })
+        this.setState({ [name]: value });
     }
 
     render() {
@@ -34,20 +43,20 @@ class SignIn extends React.Component{
 
                 <form onSubmit={this.handleSubmit}>
                     <FormInput 
-                    name="email" 
-                    type="email" 
-                    value={this.state.email} 
+                    name='email'
+                    type='email' 
                     handleChange={this.handleChange}
-                    label="email"
+                    value={this.state.email} 
+                    label='email'
                     required 
                     />
 
                     <FormInput 
-                    name="password" 
-                    type="password"
+                    name='password'
+                    type='password'
                     value={this.state.password} 
                     handleChange={this.handleChange} 
-                    label="label"
+                    label='Password'
                     required 
                     />
                     <div className='buttons'>
